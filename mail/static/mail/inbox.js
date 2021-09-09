@@ -20,6 +20,55 @@ function compose_email() {
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+
+
+
+  document.querySelector('#compose-form').addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    var recipients = document.querySelector('#compose-recipients').value;
+    var subject = document.querySelector('#compose-subject').value;
+    var body = document.querySelector('#compose-body').value;
+
+    var alert = document.getElementById("alert");
+    if(alert){
+        document.querySelector("#alert").outerHTML = "";
+    }
+    
+
+    fetch('/emails', {
+      method: 'POST',
+      body: JSON.stringify({
+        recipients: recipients,
+        subject: subject,
+        body: body
+      })
+    })
+      .then(response => response.json())
+      .then(result => {
+
+        if (result.message != null) {
+          document.querySelector('#compose-recipients').value = '';
+          document.querySelector('#compose-subject').value = '';
+          document.querySelector('#compose-body').value = '';
+
+          const element = document.createElement('div');
+          element.innerHTML = result.message;
+          element.className = "alert";
+          element.classList.add('alert-success');
+          element.id = "alert";
+          document.getElementsByClassName("container")[0].append(element);
+        }
+        if (result.error != null) {
+          const element = document.createElement('div');
+          element.innerHTML = result.error;
+          element.className = "alert";
+          element.classList.add('alert-danger');
+          element.id = "alert";
+          document.getElementsByClassName("container")[0].append(element);
+        }
+      });
+  });
 }
 
 function load_mailbox(mailbox) {
@@ -44,7 +93,7 @@ function load_mailbox(mailbox) {
 
 function read_email(id) {
   // Show the mailbox and hide other views
-  document.querySelector('#read-email-view').style.display = 'block';
+  //document.querySelector('#read-email-view').style.display = 'block';
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
 
@@ -92,31 +141,4 @@ function archive_email(id) {
   // UI update
   // TODO
 
-}
-
-function send_email() {
-  // DOM get variables content
-  // TODO
-  var recipients;
-  var subject;
-  var body;
-
-  fetch('/emails', {
-    method: 'POST',
-    body: JSON.stringify({
-      recipients: recipients,
-      subject: subject,
-      body: body
-    })
-  })
-    .then(response => response.json())
-    .then(result => {
-      // Print result
-      console.log(result);
-
-      // verify if email exists 
-      // show result success
-      // TODO
-
-    });
 }
