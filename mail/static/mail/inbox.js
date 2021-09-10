@@ -23,9 +23,9 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 
   var alert = document.getElementById("alert");
-    if (alert) {
-      document.querySelector("#alert").remove();
-    }
+  if (alert) {
+    document.querySelector("#alert").remove();
+  }
 
   document.querySelector('#compose-form').addEventListener("submit", function (e) {
     e.preventDefault();
@@ -103,20 +103,20 @@ function load_mailbox(mailbox) {
       element.id = "emails";
       const table = document.createElement('table');
 
-      for (i of emails){
+      for (i of emails) {
         var sender = i.sender;
-        if (mailbox == "sent"){
+        if (mailbox == "sent") {
           sender = i.recipients;
         }
 
-        if (i.read == true){
+        if (i.read == true) {
           table.innerHTML += `<tr onclick="read_email(${i.id})"><th style="background-color: white; font-weight: bold;">${sender}</th><th style="background-color: white;">${i.subject}</th><th style="background-color: white; text-align: right;">${i.timestamp}</th></tr>`;
         } else {
           table.innerHTML += `<tr onclick="read_email(${i.id})"><th style="font-weight: bold;">${sender}</th><th>${i.subject}</th><th style="text-align: right;">${i.timestamp}</th></tr>`;
         }
 
       }
-      
+
       element.appendChild(table);
       document.getElementById("emails-view").append(element);
     });
@@ -146,18 +146,24 @@ function read_email(id) {
     .then(email => {
       // Print email
       console.log(email);
-      if (email.archived == true) {
-        var arch = document.createElement('a');
-        arch.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="unarchive_email(${email.id})">Unarchive</button>`;
-        element.appendChild(arch);
-      } else {
-        var arch = document.createElement('a');
-        arch.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="archive_email(${email.id})">Archive</button>`;
-        element.appendChild(arch);
+
+      if (document.getElementsByTagName('h2')[0].innerHTML != email.sender) {
+
+        if (email.archived == true) {
+          var arch = document.createElement('a');
+          arch.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="unarchive_email(${email.id})">Unarchive</button>`;
+          element.appendChild(arch);
+        } else {
+          var arch = document.createElement('a');
+          arch.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="archive_email(${email.id})">Archive</button>`;
+          element.appendChild(arch);
+        }
+        var unread = document.createElement('a');
+        unread.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="unread_email(${email.id})">Unread</button>`;
+        element.appendChild(unread);
       }
-      var unread = document.createElement('a');
-      unread.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="unread_email(${email.id})">Unread</button>`;
-      element.appendChild(unread);
+
+
       var i = document.createElement('p');
       i.innerHTML = `<b>From:</b> ${email.sender}`;
       element.appendChild(i);
@@ -190,16 +196,19 @@ function unread_email(id) {
   });
 
   var alert = document.getElementById("alert");
-          if (alert) {
-            document.querySelector("#alert").remove();
-          }
-          const element = document.createElement('div');
-          element.innerHTML = 'Email unreaded!';
-          element.className = "alert";
-          element.classList.add('alert-secondary');
-          element.id = "alert";
-          document.getElementById("read-email-view").append(element);
+  if (alert) {
+    document.querySelector("#alert").remove();
+  }
+  const element = document.createElement('div');
+  element.innerHTML = 'Email unreaded!';
+  element.className = "alert";
+  element.classList.add('alert-secondary');
+  element.id = "alert";
+  document.getElementById("read-email-view").append(element);
 
+  window.setTimeout(function () {
+    window.location.href = "/";
+  }, 1500);
 }
 
 function unarchive_email(id) {
@@ -221,6 +230,9 @@ function unarchive_email(id) {
   element.id = "alert";
   document.getElementById("read-email-view").append(element);
 
+  window.setTimeout(function () {
+    window.location.href = "/";
+  }, 1500);
 }
 
 function archive_email(id) {
@@ -242,4 +254,7 @@ function archive_email(id) {
   element.id = "alert";
   document.getElementById("read-email-view").append(element);
 
+  window.setTimeout(function () {
+    window.location.href = "/";
+  }, 1500);
 }
