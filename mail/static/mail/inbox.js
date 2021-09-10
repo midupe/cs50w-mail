@@ -99,14 +99,22 @@ function load_mailbox(mailbox) {
       const element = document.createElement('div');
       element.className = "";
       element.id = "emails";
-      element.innerHTML = "<table>";
+      const table = document.createElement('table');
 
       for (i of emails){
-        element.innerHTML += '<tr>';
-        element.innerHTML += `<th>${i.sender}</th><th>${i.subject}</th>`;
-        element.innerHTML += '</tr>';
+        var sender = i.sender;
+        if (mailbox == "sent"){
+          sender = i.recipients;
+        }
+
+        if (i.read == true){
+          table.innerHTML += `<tr ><th style="background-color: white;">${sender}</th><th style="background-color: white;">${i.subject}</th><th style="background-color: white;">${i.timestamp}</th></tr>`;
+        } else {
+          table.innerHTML += `<tr><th>${sender}</th><th>${i.subject}</th><th>${i.timestamp}</th></tr>`;
+        }
       }
-      element.innerHTML += "</table>";
+      
+      element.appendChild(table);
       document.getElementById("emails-view").append(element);
     });
 }
