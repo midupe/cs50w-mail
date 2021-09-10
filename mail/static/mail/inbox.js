@@ -65,6 +65,12 @@ function compose_email() {
           element.classList.add('alert-success');
           element.id = "alert";
           document.getElementById("compose-view").append(element);
+          window.setTimeout(function () {
+            var alert = document.getElementById("alert");
+            if (alert) {
+              document.querySelector("#alert").remove();
+            }
+          }, 3000);
         }
         if (result.error != null) {
           var alert = document.getElementById("alert");
@@ -77,6 +83,12 @@ function compose_email() {
           element.classList.add('alert-danger');
           element.id = "alert";
           document.getElementById("compose-view").append(element);
+          window.setTimeout(function () {
+            var alert = document.getElementById("alert");
+            if (alert) {
+              document.querySelector("#alert").remove();
+            }
+          }, 3000);
         }
       });
   });
