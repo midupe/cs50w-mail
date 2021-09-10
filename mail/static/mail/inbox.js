@@ -15,6 +15,7 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#read-email-view').style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
@@ -84,6 +85,7 @@ function compose_email() {
 function load_mailbox(mailbox) {
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
+  document.querySelector('#read-email-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
 
   // Show the mailbox name
@@ -108,9 +110,9 @@ function load_mailbox(mailbox) {
         }
 
         if (i.read == true){
-          table.innerHTML += `<tr><th style="background-color: white; font-weight: bold;">${sender}</th><th style="background-color: white;">${i.subject}</th><th style="background-color: white; text-align: right;">${i.timestamp}</th></tr>`;
+          table.innerHTML += `<tr onclick="read_email(${i.id})"><th style="background-color: white; font-weight: bold;">${sender}</th><th style="background-color: white;">${i.subject}</th><th style="background-color: white; text-align: right;">${i.timestamp}</th></tr>`;
         } else {
-          table.innerHTML += `<tr><th style="font-weight: bold;">${sender}</th><th>${i.subject}</th><th style="text-align: right;">${i.timestamp}</th></tr>`;
+          table.innerHTML += `<tr onclick="read_email(${i.id})"><th style="font-weight: bold;">${sender}</th><th>${i.subject}</th><th style="text-align: right;">${i.timestamp}</th></tr>`;
         }
 
       }
@@ -124,7 +126,9 @@ function load_mailbox(mailbox) {
 
 function read_email(id) {
   // Show the mailbox and hide other views
-  //document.querySelector('#read-email-view').style.display = 'block';
+  const element = document.querySelector('#read-email-view');
+  element.style.display = 'block';
+  element.innerHTML = "";
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
 
@@ -134,9 +138,23 @@ function read_email(id) {
     .then(email => {
       // Print email
       console.log(email);
-
-      // ... do something else with email ...
-      // TODO
+      var i = document.createElement('p');
+      i.innerHTML = `<b>From:</b> ${email.sender}`;
+      element.appendChild(i);
+      var j = document.createElement('p');
+      j.innerHTML = `<b>To:</b> ${email.recipients}`;
+      element.appendChild(j);
+      var o = document.createElement('p');
+      o.innerHTML = `<b>Subject:</b> ${email.subject}`;
+      element.appendChild(o);
+      var p = document.createElement('p');
+      p.innerHTML = `<b>Timestamp:</b> ${email.timestamp}`;
+      element.appendChild(p);
+      var hr = document.createElement('hr');
+      element.appendChild(hr);
+      var b = document.createElement('p');
+      b.innerHTML = `${email.body}`;
+      element.appendChild(b);
     });
 
   // Mark email as read
@@ -146,6 +164,9 @@ function read_email(id) {
       read: true
     })
   })
+
+  // display element
+  document.getElementsByClassName('container')[0].appendChild(element);
 }
 
 function unread_email(id) {
