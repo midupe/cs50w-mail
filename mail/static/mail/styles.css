@@ -27,10 +27,13 @@ table {
     width: 100%;
     margin-bottom: 20px;
 }
-  
-td,th {
+
+
+th {
     border: 1px solid #ddd;
     padding: 8px;
+    border-right-style: hidden;
+    border-left-style: hidden;
 }
   
 tr:hover {background-color: #ddd;}
@@ -41,4 +44,5 @@ th {
     text-align: left;
     background-color: #f2f2f2;
     color: black;
+    font-weight: normal;
 }

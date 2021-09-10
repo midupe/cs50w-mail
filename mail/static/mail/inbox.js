@@ -108,16 +108,19 @@ function load_mailbox(mailbox) {
         }
 
         if (i.read == true){
-          table.innerHTML += `<tr ><th style="background-color: white;">${sender}</th><th style="background-color: white;">${i.subject}</th><th style="background-color: white;">${i.timestamp}</th></tr>`;
+          table.innerHTML += `<tr><th style="background-color: white; font-weight: bold;">${sender}</th><th style="background-color: white;">${i.subject}</th><th style="background-color: white; text-align: right;">${i.timestamp}</th></tr>`;
         } else {
-          table.innerHTML += `<tr><th>${sender}</th><th>${i.subject}</th><th>${i.timestamp}</th></tr>`;
+          table.innerHTML += `<tr><th style="font-weight: bold;">${sender}</th><th>${i.subject}</th><th style="text-align: right;">${i.timestamp}</th></tr>`;
         }
+
       }
       
       element.appendChild(table);
       document.getElementById("emails-view").append(element);
     });
 }
+
+//<th><button class="btn btn-sm btn-outline-primary" onclick="archive_email(${i.id})">Archive</button>
 
 function read_email(id) {
   // Show the mailbox and hide other views
@@ -151,7 +154,20 @@ function unread_email(id) {
     body: JSON.stringify({
       read: false
     })
-  })
+  });
+
+  // UI update
+  // TODO
+
+}
+
+function unarchive_email(id) {
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      archived: false
+    })
+  });
 
   // UI update
   // TODO
