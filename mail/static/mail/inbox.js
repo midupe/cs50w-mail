@@ -21,7 +21,10 @@ function compose_email() {
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
 
-
+  var alert = document.getElementById("alert");
+    if (alert) {
+      document.querySelector("#alert").remove();
+    }
 
   document.querySelector('#compose-form').addEventListener("submit", function (e) {
     e.preventDefault();
@@ -31,10 +34,10 @@ function compose_email() {
     var body = document.querySelector('#compose-body').value;
 
     var alert = document.getElementById("alert");
-    if(alert){
-        document.querySelector("#alert").outerHTML = "";
+    if (alert) {
+      document.querySelector("#alert").remove();
     }
-    
+
 
     fetch('/emails', {
       method: 'POST',
@@ -51,21 +54,28 @@ function compose_email() {
           document.querySelector('#compose-recipients').value = '';
           document.querySelector('#compose-subject').value = '';
           document.querySelector('#compose-body').value = '';
-
+          var alert = document.getElementById("alert");
+          if (alert) {
+            document.querySelector("#alert").remove();
+          }
           const element = document.createElement('div');
           element.innerHTML = result.message;
           element.className = "alert";
           element.classList.add('alert-success');
           element.id = "alert";
-          document.getElementsByClassName("container")[0].append(element);
+          document.getElementById("compose-view").append(element);
         }
         if (result.error != null) {
+          var alert = document.getElementById("alert");
+          if (alert) {
+            document.querySelector("#alert").remove();
+          }
           const element = document.createElement('div');
           element.innerHTML = result.error;
           element.className = "alert";
           element.classList.add('alert-danger');
           element.id = "alert";
-          document.getElementsByClassName("container")[0].append(element);
+          document.getElementById("compose-view").append(element);
         }
       });
   });
@@ -83,11 +93,21 @@ function load_mailbox(mailbox) {
   fetch(`/emails/${mailbox}`)
     .then(response => response.json())
     .then(emails => {
-      // Print emails
+
       console.log(emails);
 
-      // ... do something else with emails ...
-      // TODO
+      const element = document.createElement('div');
+      element.className = "";
+      element.id = "emails";
+      element.innerHTML = "<table>";
+
+      for (i of emails){
+        element.innerHTML += '<tr>';
+        element.innerHTML += `<th>${i.sender}</th><th>${i.subject}</th>`;
+        element.innerHTML += '</tr>';
+      }
+      element.innerHTML += "</table>";
+      document.getElementById("emails-view").append(element);
     });
 }
 
