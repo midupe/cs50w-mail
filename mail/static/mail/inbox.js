@@ -108,8 +108,6 @@ function load_mailbox(mailbox) {
     .then(response => response.json())
     .then(emails => {
 
-      console.log(emails);
-
       const element = document.createElement('div');
       element.className = "";
       element.id = "emails";
@@ -156,8 +154,6 @@ function read_email(id) {
   fetch(`/emails/${id}`)
     .then(response => response.json())
     .then(email => {
-      // Print email
-      console.log(email);
 
       if (document.getElementsByTagName('h2')[0].innerHTML != email.sender) {
 
@@ -173,6 +169,10 @@ function read_email(id) {
         var unread = document.createElement('a');
         unread.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="unread_email(${email.id})">Unread</button>`;
         element.appendChild(unread);
+
+        var reply = document.createElement('a');
+        reply.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="reply_email(${email.id})">Reply</button>`;
+        element.appendChild(reply);
       }
 
 
@@ -269,4 +269,99 @@ function archive_email(id) {
   window.setTimeout(function () {
     window.location.href = "/";
   }, 1500);
+}
+
+async function reply_email(id) {
+  var recipient; var subject; var timestamp; var body;
+  await fetch(`/emails/${id}`)
+    .then(response => response.json())
+    .then(email => {
+      // Print email
+      console.log(email);
+      recipient = email.sender;
+      subject = email.subject;
+      timestamp = email.timestamp;
+      body = email.body;
+    });
+
+  // Show compose view and hide other views
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#read-email-view').style.display = 'none';
+
+  // Import composition fields
+  document.querySelector('#compose-recipients').value = recipient;
+  document.querySelector('#compose-subject').value = `Re: ${subject}`;
+  document.querySelector('#compose-body').value = `\n\n\n\n\nOn ${timestamp},\n${recipient} wrote:\n${body}`;
+
+  var alert = document.getElementById("alert");
+  if (alert) {
+    document.querySelector("#alert").remove();
+  }
+
+  document.querySelector('#compose-form').addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    var recipients = document.querySelector('#compose-recipients').value;
+    var subject = document.querySelector('#compose-subject').value;
+    var body = document.querySelector('#compose-body').value;
+
+    var alert = document.getElementById("alert");
+    if (alert) {
+      document.querySelector("#alert").remove();
+    }
+
+
+    fetch('/emails', {
+      method: 'POST',
+      body: JSON.stringify({
+        recipients: recipients,
+        subject: subject,
+        body: body
+      })
+    })
+      .then(response => response.json())
+      .then(result => {
+
+        if (result.message != null) {
+          document.querySelector('#compose-recipients').value = '';
+          document.querySelector('#compose-subject').value = '';
+          document.querySelector('#compose-body').value = '';
+          var alert = document.getElementById("alert");
+          if (alert) {
+            document.querySelector("#alert").remove();
+          }
+          const element = document.createElement('div');
+          element.innerHTML = result.message;
+          element.className = "alert";
+          element.classList.add('alert-success');
+          element.id = "alert";
+          document.getElementById("compose-view").append(element);
+          window.setTimeout(function () {
+            var alert = document.getElementById("alert");
+            if (alert) {
+              document.querySelector("#alert").remove();
+            }
+          }, 3000);
+        }
+        if (result.error != null) {
+          var alert = document.getElementById("alert");
+          if (alert) {
+            document.querySelector("#alert").remove();
+          }
+          const element = document.createElement('div');
+          element.innerHTML = result.error;
+          element.className = "alert";
+          element.classList.add('alert-danger');
+          element.id = "alert";
+          document.getElementById("compose-view").append(element);
+          window.setTimeout(function () {
+            var alert = document.getElementById("alert");
+            if (alert) {
+              document.querySelector("#alert").remove();
+            }
+          }, 3000);
+        }
+      });
+  });
 }
