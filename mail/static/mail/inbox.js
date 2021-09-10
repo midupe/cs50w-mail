@@ -122,9 +122,17 @@ function load_mailbox(mailbox) {
     });
 }
 
-//<th><button class="btn btn-sm btn-outline-primary" onclick="archive_email(${i.id})">Archive</button>
+
 
 function read_email(id) {
+  // Mark email as read
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      read: true
+    })
+  })
+
   // Show the mailbox and hide other views
   const element = document.querySelector('#read-email-view');
   element.style.display = 'block';
@@ -138,6 +146,18 @@ function read_email(id) {
     .then(email => {
       // Print email
       console.log(email);
+      if (email.archived == true) {
+        var arch = document.createElement('a');
+        arch.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="unarchive_email(${email.id})">Unarchive</button>`;
+        element.appendChild(arch);
+      } else {
+        var arch = document.createElement('a');
+        arch.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="archive_email(${email.id})">Archive</button>`;
+        element.appendChild(arch);
+      }
+      var unread = document.createElement('a');
+      unread.innerHTML = `<button style="margin: 0 10px 10px 0;" class="btn btn-sm btn-primary" onclick="unread_email(${email.id})">Unread</button>`;
+      element.appendChild(unread);
       var i = document.createElement('p');
       i.innerHTML = `<b>From:</b> ${email.sender}`;
       element.appendChild(i);
@@ -157,14 +177,6 @@ function read_email(id) {
       element.appendChild(b);
     });
 
-  // Mark email as read
-  fetch(`/emails/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify({
-      read: true
-    })
-  })
-
   // display element
   document.getElementsByClassName('container')[0].appendChild(element);
 }
@@ -177,8 +189,16 @@ function unread_email(id) {
     })
   });
 
-  // UI update
-  // TODO
+  var alert = document.getElementById("alert");
+          if (alert) {
+            document.querySelector("#alert").remove();
+          }
+          const element = document.createElement('div');
+          element.innerHTML = 'Email unreaded!';
+          element.className = "alert";
+          element.classList.add('alert-secondary');
+          element.id = "alert";
+          document.getElementById("read-email-view").append(element);
 
 }
 
@@ -190,8 +210,16 @@ function unarchive_email(id) {
     })
   });
 
-  // UI update
-  // TODO
+  var alert = document.getElementById("alert");
+  if (alert) {
+    document.querySelector("#alert").remove();
+  }
+  const element = document.createElement('div');
+  element.innerHTML = 'Email unarchived!';
+  element.className = "alert";
+  element.classList.add('alert-secondary');
+  element.id = "alert";
+  document.getElementById("read-email-view").append(element);
 
 }
 
@@ -203,7 +231,15 @@ function archive_email(id) {
     })
   })
 
-  // UI update
-  // TODO
+  var alert = document.getElementById("alert");
+  if (alert) {
+    document.querySelector("#alert").remove();
+  }
+  const element = document.createElement('div');
+  element.innerHTML = 'Email archived!';
+  element.className = "alert";
+  element.classList.add('alert-secondary');
+  element.id = "alert";
+  document.getElementById("read-email-view").append(element);
 
 }
